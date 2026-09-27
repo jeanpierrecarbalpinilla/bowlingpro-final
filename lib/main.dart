@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/login_screen.dart'; // Importamos la nueva pantalla
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,10 +18,11 @@ class BowlingProApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BowlingPro',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const Scaffold(
-        body: Center(child: Text('BowlingPro - Firebase Conectado')),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
       ),
+      home: const LoginScreen(), // Ahora la app arranca en el Login
     );
   }
 }

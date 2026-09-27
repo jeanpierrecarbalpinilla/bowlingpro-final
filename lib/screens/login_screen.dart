@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'register_screen.dart'; // Importación para poder navegar al registro
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('¡Inicio de sesión exitoso!')),
       );
-      // En la próxima fase, aquí navegaremos a la pantalla de puntajes
+      // En la próxima fase, aquí navegaremos a la pantalla principal
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error: Revisa tus credenciales o conexión.')),
@@ -72,6 +73,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _login,
                     child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
                   ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                );
+              },
+              child: const Text('¿No tienes cuenta? Regístrate aquí'),
+            ),
           ],
         ),
       ),

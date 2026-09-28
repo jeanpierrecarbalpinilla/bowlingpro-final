@@ -32,7 +32,10 @@ class LeccionService {
   /// - Cualquier otro nivel requiere haber completado y aprobado el
   ///   100% de las lecciones del nivel inmediatamente anterior.
   Future<bool> puedeAccederA(String nivel, String uid) async {
-    final indice = ordenNiveles.indexOf(nivel);
+    // Acepta 'Principiante' o 'principiante' (la pantalla envía el nombre
+    // visible del nivel).
+    final nivelNormalizado = nivel.toLowerCase().trim();
+    final indice = ordenNiveles.indexOf(nivelNormalizado);
 
     if (indice == -1) {
       throw ArgumentError('Nivel desconocido: $nivel');
@@ -42,13 +45,6 @@ class LeccionService {
     }
 
     final nivelAnterior = ordenNiveles[indice - 1];
-    final leccionesNivelAnterior = await obtenerLeccionesPorNivel(nivelAnterior);
-
-    if (leccionesNivelAnterior.isEmpty) {
-      // Si el nivel anterior no tiene lecciones cargadas todavía,
-      // no bloqueamos por un dato que no existe en el contenido.
-      return true;
-    }
 
     final progresoDoc = await _db.collection('progreso_usuario').doc(uid).get();
     if (!progresoDoc.exists) {
@@ -58,6 +54,22 @@ class LeccionService {
     final data = progresoDoc.data()!;
     // Se espera un mapa: { "leccionId": { "aprobado": true/false, ... } }
     final completadas = Map<String, dynamic>.from(data['lecciones_completadas'] ?? {});
+
+    // 1) Progreso registrado por nivel: evaluacion_screen guarda
+    //    leccionId = nombre del nivel (ej. 'Principiante'). Se compara sin
+    //    distinguir mayúsculas.
+    final aproboNivel = completadas.entries.any((e) =>
+        e.key.toLowerCase() == nivelAnterior &&
+        e.value is Map &&
+        e.value['aprobado'] == true);
+    if (aproboNivel) return true;
+
+    // 2) Progreso por lección individual, si hay lecciones cargadas en
+    //    Firestore para el nivel anterior: todas deben estar aprobadas.
+    final leccionesNivelAnterior = await obtenerLeccionesPorNivel(nivelAnterior);
+    if (leccionesNivelAnterior.isEmpty) {
+      return false; // nivel anterior sin aprobar: el siguiente sigue bloqueado
+    }
 
     for (final leccion in leccionesNivelAnterior) {
       final registro = completadas[leccion.id];

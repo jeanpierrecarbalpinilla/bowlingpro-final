@@ -3,6 +3,9 @@ import '../services/auth_service.dart';
 import 'package:bowling_pro/screens/niveles_screen.dart';
 import 'nueva_partida_screen.dart';
 import 'historial_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'coaching_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -123,6 +126,8 @@ class HomeScreen extends StatelessWidget {
                               MaterialPageRoute(builder: (_) => const HistorialScreen()),
                             ),
                           ),
+                          const SizedBox(height: 14),
+                          const _CoachingEntry(),
 
                           const Spacer(),
                           const SizedBox(height: 12),
@@ -218,6 +223,39 @@ class _MenuCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Muestra la tarjeta de Coaching solo si el usuario es entrenador.
+class _CoachingEntry extends StatelessWidget {
+  const _CoachingEntry();
+
+  Future<bool> _esEntrenador() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return false;
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return doc.data()?['role'] == 'entrenador';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _esEntrenador(),
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return _MenuCard(
+          icon: Icons.groups_rounded,
+          iconColor: const Color(0xFFAB47BC),
+          title: 'Coaching',
+          subtitle: 'Revisa a tus jugadores y deja comentarios',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CoachingScreen()),
+          ),
+        );
+      },
     );
   }
 }

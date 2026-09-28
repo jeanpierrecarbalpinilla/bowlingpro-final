@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bowling_pro/screens/evaluacion_screen.dart';
 
 class LeccionDetalleScreen extends StatelessWidget {
   final String nivel;
@@ -79,9 +80,12 @@ class LeccionDetalleScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    // TODO: Navegar a evaluacion_screen.dart (Siguiente historia)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Próximamente: Evaluación')),
+                    // Navegación real conectada a la pantalla de evaluación
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EvaluacionScreen(nivel: nivel),
+                      ),
                     );
                   },
                   child: const Text(

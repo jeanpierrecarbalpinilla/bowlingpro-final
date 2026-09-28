@@ -17,7 +17,7 @@ class LeccionService {
   Future<List<Leccion>> obtenerLeccionesPorNivel(String nivel) async {
     final query = await _db
         .collection('lecciones')
-        .where('nivel', isEqualTo: nivel)
+        .where('nivel', isEqualTo: nivel.toLowerCase())
         .get();
 
     return query.docs
@@ -31,8 +31,13 @@ class LeccionService {
   /// - El primer nivel ('principiante') siempre está disponible.
   /// - Cualquier otro nivel requiere haber completado y aprobado el
   ///   100% de las lecciones del nivel inmediatamente anterior.
-  Future<bool> puedeAccederA(String nivel, String uid) async {
-    final indice = ordenNiveles.indexOf(nivel);
+  Future<bool> peutAccederA(String uid, String nivel) async {
+    return puedeAccederA(uid, nivel);
+  }
+
+  Future<bool> puedeAccederA(String uid, String nivel) async {
+    final nivelClean = nivel.toLowerCase();
+    final indice = ordenNiveles.indexOf(nivelClean);
 
     if (indice == -1) {
       throw ArgumentError('Nivel desconocido: $nivel');
@@ -44,12 +49,6 @@ class LeccionService {
     final nivelAnterior = ordenNiveles[indice - 1];
     final leccionesNivelAnterior = await obtenerLeccionesPorNivel(nivelAnterior);
 
-    if (leccionesNivelAnterior.isEmpty) {
-      // Si el nivel anterior no tiene lecciones cargadas todavía,
-      // no bloqueamos por un dato que no existe en el contenido.
-      return true;
-    }
-
     final progresoDoc = await _db.collection('progreso_usuario').doc(uid).get();
     if (!progresoDoc.exists) {
       return false; // no ha completado nada todavía
@@ -58,6 +57,12 @@ class LeccionService {
     final data = progresoDoc.data()!;
     // Se espera un mapa: { "leccionId": { "aprobado": true/false, ... } }
     final completadas = Map<String, dynamic>.from(data['lecciones_completadas'] ?? {});
+
+    // Si el nivel anterior no tiene lecciones en Firestore, validamos directamente por nombre de nivel o permitimos si ya aprobó el nivel anterior globalmente
+    if (leccionesNivelAnterior.isEmpty) {
+      final registroNivel = completadas[nivelAnterior];
+      return registroNivel != null && registroNivel['aprobado'] == true;
+    }
 
     for (final leccion in leccionesNivelAnterior) {
       final registro = completadas[leccion.id];
@@ -84,6 +89,12 @@ class LeccionService {
           'calificacion': calificacionObtenida,
           'fecha': FieldValue.serverTimestamp(),
         },
+        // También guardamos la equivalencia por nivel completo para asegurar compatibilidad total
+        leccionId.toLowerCase(): {
+          'aprobado': aprobo,
+          'calificacion': calificacionObtenida,
+          'fecha': FieldValue.serverTimestamp(),
+        }
       },
     }, SetOptions(merge: true));
   }

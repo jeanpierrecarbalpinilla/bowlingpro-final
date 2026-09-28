@@ -14,6 +14,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _selectedRole = 'jugador'; // Rol por defecto
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _obscurePassword = true; // solo visual: mostrar/ocultar contraseña
 
   void _register() async {
     setState(() => _isLoading = true);
@@ -36,43 +37,143 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  // Paleta de la marca (la misma del home: azul oscuro, celeste y naranja)
+  static const Color _azul = Color(0xFF1E3A5F);
+  static const Color _celeste = Color(0xFF29B6F6);
+  static const Color _naranja = Color(0xFFF57C00);
+
+  InputDecoration _decoracion(String label, IconData icono, {Widget? sufijo}) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icono, color: _azul),
+      suffixIcon: sufijo,
+      filled: true,
+      fillColor: const Color(0xFFF4F7FB),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      floatingLabelStyle: const TextStyle(color: _azul),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFFE1E8F0)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: _celeste, width: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Crear Cuenta')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Correo electrónico', border: OutlineInputBorder()),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Contraseña', border: OutlineInputBorder()),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedRole,
-              decoration: const InputDecoration(labelText: 'Rol', border: OutlineInputBorder()),
-              items: ['jugador', 'entrenador', 'administrador']
-                  .map((role) => DropdownMenuItem(value: role, child: Text(role.toUpperCase())))
-                  .toList(),
-              onChanged: (value) => setState(() => _selectedRole = value!),
-            ),
-            const SizedBox(height: 24),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
-                    onPressed: _register,
-                    child: const Text('Registrarse'),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Crear Cuenta'),
+        backgroundColor: Colors.white,
+        foregroundColor: _azul,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(child: Image.asset('assets/logo.png', height: 96)),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Únete a BowlingPro',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: _azul,
+                    ),
                   ),
-          ],
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Crea tu cuenta y elige tu rol',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 15, color: Color(0xFF6B7A8C)),
+                  ),
+                  const SizedBox(height: 28),
+                  TextField(
+                    controller: _emailController,
+                    decoration: _decoracion(
+                      'Correo electrónico',
+                      Icons.mail_outline_rounded,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: _decoracion(
+                      'Contraseña',
+                      Icons.lock_outline_rounded,
+                      sufijo: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: const Color(0xFF6B7A8C),
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                    ),
+                    obscureText: _obscurePassword,
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _selectedRole,
+                    decoration: _decoracion('Rol', Icons.badge_outlined),
+                    borderRadius: BorderRadius.circular(14),
+                    items: ['jugador', 'entrenador', 'administrador']
+                        .map((role) => DropdownMenuItem(value: role, child: Text(role.toUpperCase())))
+                        .toList(),
+                    onChanged: (value) => setState(() => _selectedRole = value!),
+                  ),
+                  const SizedBox(height: 28),
+                  _isLoading
+                      ? const SizedBox(
+                          height: 54,
+                          child: Center(
+                            child: CircularProgressIndicator(color: _azul),
+                          ),
+                        )
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _azul,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 54),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          onPressed: _register,
+                          child: const Text(
+                            'Registrarse',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

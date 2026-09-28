@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'coaching_screen.dart';
 import 'admin_screen.dart';
+import 'retos_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -125,6 +126,17 @@ class HomeScreen extends StatelessWidget {
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const HistorialScreen()),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          _MenuCard(
+                            icon: Icons.emoji_events_rounded,
+                            iconColor: const Color(0xFFFFA726),
+                            title: 'Retos e insignias',
+                            subtitle: 'Desbloquea logros con tus partidas',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const RetosScreen()),
                             ),
                           ),
                           const SizedBox(height: 14),

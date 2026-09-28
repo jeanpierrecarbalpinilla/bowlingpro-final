@@ -3,9 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bowling_pro/services/leccion_service.dart';
 import 'package:bowling_pro/screens/leccion_detalle_screen.dart';
 
-class NivelesScreen extends StatelessWidget {
+class NivelesScreen extends StatefulWidget {
   const NivelesScreen({super.key});
 
+  @override
+  State<NivelesScreen> createState() => _NivelesScreenState();
+}
+
+class _NivelesScreenState extends State<NivelesScreen> {
   @override
   Widget build(BuildContext context) {
     final leccionService = LeccionService();
@@ -37,9 +42,10 @@ class NivelesScreen extends StatelessWidget {
 
             return FutureBuilder<bool>(
               // Lógica de la regla: usar puedeAccederA del servicio
-              future: leccionService.puedeAccederA(userId, nivel),
+              future: leccionService.puedeAccederA(nivel.toLowerCase(), userId),
               builder: (context, snapshot) {
-                final bool tieneAcceso = snapshot.data ?? false;
+                // Principiante (indice 0) siempre esta desbloqueado desde el inicio
+                final bool tieneAcceso = index == 0 || (snapshot.data ?? false);
                 final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
 
                 return Card(
@@ -80,13 +86,15 @@ class NivelesScreen extends StatelessWidget {
                             color: tieneAcceso ? Colors.black54 : Colors.transparent,
                           ),
                     onTap: tieneAcceso
-                        ? () {
-                            Navigator.push(
+                        ? () async {
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => LeccionDetalleScreen(nivel: nivel),
                               ),
                             );
+                            // Refresca para que se vea el siguiente nivel desbloqueado
+                            if (mounted) setState(() {});
                           }
                         : null, // Si no tiene acceso, el botón queda totalmente deshabilitado
                   ),

@@ -1,10 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:bowling_pro/screens/evaluacion_screen.dart';
 
 class LeccionDetalleScreen extends StatelessWidget {
   final String nivel;
 
   const LeccionDetalleScreen({super.key, required this.nivel});
+
+  // Videos reales de YouTube para esta lección.
+  static const List<Map<String, String>> _videos = [
+    {
+      'titulo': 'Cómo lanzar',
+      'url': 'https://www.youtube.com/watch?v=k3_4Zbb2oE4',
+    },
+    {
+      'titulo': 'Los pasos básicos en el approach para jugar al bowling',
+      'url': 'https://www.youtube.com/watch?v=2wBoWkAt2as',
+    },
+    {
+      'titulo': 'Bolos: Desarrollando la técnica de lanzamiento',
+      'url': 'https://www.youtube.com/watch?v=ZTBes7Om3Eg',
+    },
+  ];
+
+  Future<void> _abrirVideo(BuildContext context, String url) async {
+    bool ok = false;
+    try {
+      ok = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      ok = false;
+    }
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo abrir el video')),
+      );
+    }
+  }
+
+  Widget _tarjetaVideo(BuildContext context, String titulo, String url) {
+    final videoId = Uri.parse(url).queryParameters['v'];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: GestureDetector(
+        onTap: () => _abrirVideo(context, url),
+        child: Container(
+          height: 200,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.black45,
+            borderRadius: BorderRadius.circular(15.0),
+            border: Border.all(color: const Color(0xFF29B6F6), width: 2),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(13.0),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (videoId != null)
+                  Image.network(
+                    'https://img.youtube.com/vi/$videoId/hqdefault.jpg',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const SizedBox.shrink(),
+                  ),
+                Container(color: Colors.black38),
+                const Center(
+                  child: Icon(
+                    Icons.play_circle_outline,
+                    color: Colors.white,
+                    size: 64,
+                  ),
+                ),
+                Positioned(
+                  left: 12,
+                  right: 12,
+                  bottom: 10,
+                  child: Text(
+                    titulo,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,22 +121,9 @@ class LeccionDetalleScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Mock del reproductor de video / imagen ilustrativa
-              Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.black45,
-                  borderRadius: BorderRadius.circular(15.0),
-                  border: Border.all(color: const Color(0xFF29B6F6), width: 2),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.play_circle_outline,
-                    color: Colors.white70,
-                    size: 64,
-                  ),
-                ),
+              // Videos reales de YouTube (al tocar se abre el video)
+              ..._videos.map(
+                (v) => _tarjetaVideo(context, v['titulo']!, v['url']!),
               ),
               const SizedBox(height: 24),
               const Text(

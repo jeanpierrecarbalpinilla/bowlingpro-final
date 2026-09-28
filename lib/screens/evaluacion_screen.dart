@@ -32,8 +32,13 @@ class _EvaluacionScreenState extends State<EvaluacionScreen> {
     if (_respuestaSeleccionada == _opciones[0]) {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId != null) {
-        // Registra el nivel como completado (esto desbloquea el siguiente)
-        await LeccionService().registrarProgreso(userId, widget.nivel);
+        // Registra el nivel con los parámetros requeridos por el servicio
+        await LeccionService().registrarProgreso(
+          uid: userId,
+          leccionId: widget.nivel,
+          aprobo: true,
+          calificacionObtenida: 100.0,
+        );
       }
 
       if (!mounted) return;
@@ -109,7 +114,7 @@ class _EvaluacionScreenState extends State<EvaluacionScreen> {
               const SizedBox(height: 30),
               ..._opciones.map((opcion) {
                 return Card(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   margin: const EdgeInsets.only(bottom: 12.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),

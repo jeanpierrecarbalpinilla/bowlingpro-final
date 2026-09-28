@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:bowling_pro/screens/niveles_screen.dart';
 import 'nueva_partida_screen.dart';
+import 'historial_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -117,9 +118,10 @@ class HomeScreen extends StatelessWidget {
                             iconColor: const Color(0xFF66BB6A),
                             title: 'Historial y estadísticas',
                             subtitle: 'Revisa tu progreso y tu promedio',
-                            onTap: () {
-                              // TODO: navegar a HistorialScreen
-                            },
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const HistorialScreen()),
+                            ),
                           ),
 
                           const Spacer(),

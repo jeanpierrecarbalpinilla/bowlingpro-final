@@ -6,6 +6,7 @@ import 'historial_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'coaching_screen.dart';
+import 'admin_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -128,6 +129,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 14),
                           const _CoachingEntry(),
+                          const _AdminEntry(),
 
                           const Spacer(),
                           const SizedBox(height: 12),
@@ -253,6 +255,42 @@ class _CoachingEntry extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CoachingScreen()),
+          ),
+        );
+      },
+    );
+  }
+  
+}
+/// Muestra la tarjeta de Administracion solo si el usuario es administrador.
+class _AdminEntry extends StatelessWidget {
+  const _AdminEntry();
+
+  Future<bool> _esAdmin() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return false;
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return doc.data()?['role'] == 'administrador';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _esAdmin(),
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 14),
+          child: _MenuCard(
+            icon: Icons.admin_panel_settings_rounded,
+            iconColor: const Color(0xFFFFA726),
+            title: 'Administrar grupos',
+            subtitle: 'Vincula entrenadores y jugadores',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AdminScreen()),
+            ),
           ),
         );
       },

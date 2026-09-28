@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'package:bowling_pro/screens/niveles_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -92,7 +93,10 @@ class HomeScreen extends StatelessWidget {
                             title: 'Niveles de aprendizaje',
                             subtitle: 'Aprende técnica, postura y estrategia',
                             onTap: () {
-                              // TODO: navegar a NivelesScreen (HU-E2.03)
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const NivelesScreen()),
+                              );
                             },
                           ),
                           const SizedBox(height: 14),

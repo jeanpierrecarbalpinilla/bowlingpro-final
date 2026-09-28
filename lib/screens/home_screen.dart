@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:bowling_pro/screens/niveles_screen.dart';
+import 'nueva_partida_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -105,9 +106,10 @@ class HomeScreen extends StatelessWidget {
                             iconColor: const Color(0xFF29B6F6),
                             title: 'Registrar partida',
                             subtitle: 'Anota tus lanzamientos frame a frame',
-                            onTap: () {
-                              // TODO: navegar a pantalla de registro de partida
-                            },
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const NuevaPartidaScreen()),
+                            ),
                           ),
                           const SizedBox(height: 14),
                           _MenuCard(

@@ -40,7 +40,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Paleta de la marca (la misma del home: azul oscuro, celeste y naranja)
   static const Color _azul = Color(0xFF1E3A5F);
   static const Color _celeste = Color(0xFF29B6F6);
-  static const Color _naranja = Color(0xFFF57C00);
 
   InputDecoration _decoracion(String label, IconData icono, {Widget? sufijo}) {
     return InputDecoration(

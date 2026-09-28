@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bowling_pro/services/leccion_service.dart';
+import 'package:bowling_pro/screens/leccion_detalle_screen.dart';
 
 class NivelesScreen extends StatelessWidget {
   const NivelesScreen({super.key});
@@ -80,9 +81,11 @@ class NivelesScreen extends StatelessWidget {
                           ),
                     onTap: tieneAcceso
                         ? () {
-                            // TODO: Navegar a leccion_detalle_screen.dart
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Próximamente: Lecciones de $nivel')),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LeccionDetalleScreen(nivel: nivel),
+                              ),
                             );
                           }
                         : null, // Si no tiene acceso, el botón queda totalmente deshabilitado

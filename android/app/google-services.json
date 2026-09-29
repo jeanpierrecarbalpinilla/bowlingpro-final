@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "957697550017",
+    "project_id": "bowlingpro-2bc7a",
+    "storage_bucket": "bowlingpro-2bc7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957697550017:android:37186ff56282825b879640",
+        "android_client_info": {
+          "package_name": "com.example.bowling_pro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYw028ZdxaVz5dXniG2zYJgnRVH4QFvSI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
